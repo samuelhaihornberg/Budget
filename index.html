@@ -3,275 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuideoPlan - Dashboard Financier Complet</title>
+    <title>GuideoPlan - Présentation Stratégique Financière</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
-            --text-main: #f8fafc;
-            --accent: #3b82f6;
-            --debt-color: rgba(239, 68, 68, 0.6);
-            --profit-color: rgba(34, 197, 94, 0.6);
-            
-            /* Couleurs des bulles de charge */
-            --c-survie: #ef4444;    /* Rouge */
-            --c-abo: #a855f7;       /* Violet */
-            --c-boisson: #f59e0b;   /* Orange */
-            --c-epargne: #10b981;   /* Vert */
-            --c-perso: #ec4899;     /* Rose */
+            --ppt-blue-dark: #002b5c;
+            --ppt-blue-light: #185a9d;
+            --ppt-accent: #ffb703;
+            --ppt-bg: #e2e8f0;
+            --slide-bg: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--ppt-bg);
             color: var(--text-main);
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', Arial, Tahoma, sans-serif;
             margin: 0;
-            padding: 20px;
-        }
-
-        h1 { text-align: center; font-weight: 300; letter-spacing: 2px; }
-
-        /* Système d'onglets */
-        .tabs {
+            padding: 30px;
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
         }
-        .tab-btn {
-            background: var(--panel-bg);
-            color: var(--text-main);
-            border: 1px solid #334155;
-            padding: 8px 14px;
+
+        /* En-tête de présentation style PowerPoint */
+        .presentation-header {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, var(--ppt-blue-dark), var(--ppt-blue-light));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presentation-header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .presentation-header span {
+            font-size: 13px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* Conteneur de la "Slide" */
+        .slide-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--slide-bg);
+            min-height: 450px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative;
+            display: none;
+            border-left: 6px solid var(--ppt-accent);
+        }
+
+        .slide-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-title {
+            font-size: 24px;
+            color: var(--ppt-blue-dark);
+            margin-top: 0;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Barre de navigation style diaporama */
+        .deck-nav {
+            width: 100%;
+            max-width: 900px;
+            background: #cbd5e1;
+            padding: 12px 20px;
+            border-radius: 0 0 6px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .nav-btn {
+            background: var(--ppt-blue-dark);
+            color: white;
+            border: none;
+            padding: 8px 16px;
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            border-radius: 4px;
             font-weight: bold;
             font-size: 13px;
-        }
-        .tab-btn:hover, .tab-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transition: background 0.2s;
         }
 
-        /* Conteneurs d'affichage */
-        .tab-content {
-            display: none;
-            background: var(--panel-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            animation: fadeIn 0.5s ease-in-out;
+        .nav-btn:hover {
+            background: var(--ppt-blue-light);
         }
-        .tab-content.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Aquarium Visuel */
-        .aquarium-container {
-            width: 100%;
-            height: 250px;
-            border: 2px solid var(--accent);
-            border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-            background: #000;
-            margin-bottom: 20px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
-        
-        .water-level {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            transition: height 1.5s ease-out, background-color 1.5s ease-out;
+        .slide-indicators {
             display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 10px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px #000;
+            gap: 6px;
+            overflow-x: auto;
+            max-width: 600px;
+            padding: 4px;
         }
 
-        /* Bulles animées */
-        .bubble {
-            position: absolute;
-            bottom: -50px;
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #94a3b8;
             border-radius: 50%;
-            opacity: 0.8;
-            animation: floatUp infinite ease-in;
-            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2), 0 0 10px rgba(255,255,255,0.2);
-        }
-        
-        .bubble::after {
-            content: attr(data-label);
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px;
-            white-space: nowrap;
-            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .b-survie { background: var(--c-survie); width: 50px; height: 50px; left: 15%; animation-duration: 4s; }
-        .b-abo { background: var(--c-abo); width: 25px; height: 25px; left: 40%; animation-duration: 3s; animation-delay: 1s; }
-        .b-boisson { background: var(--c-boisson); width: 30px; height: 30px; left: 65%; animation-duration: 5s; animation-delay: 0.5s; }
-        .b-epargne { background: var(--c-epargne); width: 35px; height: 35px; left: 85%; animation-duration: 4.5s; animation-delay: 1.5s; }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
-            100% { transform: translateY(-300px) scale(1.2); opacity: 0; }
+        .dot.active {
+            background: var(--ppt-accent);
+            transform: scale(1.2);
         }
 
-        /* Graphique (Montagne) */
-        .chart-container {
-            position: relative;
-            height: 45vh;
+        /* Tableaux et fiches style pro */
+        .data-table {
             width: 100%;
-            margin-top: 20px;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
 
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        .data-table th, .data-table td {
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
         }
-        .data-card {
-            background: rgba(0,0,0,0.3);
+
+        .data-table th {
+            background-color: var(--ppt-blue-dark);
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .highlight-box {
+            background: #f1f5f9;
+            border-left: 4px solid var(--ppt-blue-light);
             padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>GuideoPlan - Matrice Financière Globale</h1>
+    <!-- DONNÉES XML EMBARQUÉES -->
+    <script type="text/xml" id="budget-xml">
+        <budget-deck currency="NIS">
+            <slide id="slide-1" title="Vue d'ensemble & Trajectoire">
+                <type>chart</type>
+                <summary>Analyse globale des flux financiers de Septembre 2026 à Juillet 2027. Sortie définitive du découvert en novembre et stabilisation de la trésorerie nette.</summary>
+            </slide>
+            <slide id="slide-2" title="Septembre 2026 : Le Point de Départ">
+                <flux>+4 500 NIS (Salaire) + 1 347 NIS (Remboursement AliExpress)</flux>
+                <charges>-3 500 NIS (Survie/Tabac) - 250 NIS (Abonnements)</charges>
+                <balance>-1 565 NIS</balance>
+                <note>Absorption initiale du creux grâce au remboursement exceptionnel.</note>
+            </slide>
+            <slide id="slide-3" title="Octobre & Novembre 2026 : Redressement">
+                <flux>+4 500 NIS par mois</flux>
+                <charges>Charges courantes + 600 NIS d'herbes intégrés</charges>
+                <balance>Oct: -677 NIS | Nov: +211 NIS 🟢</balance>
+                <note>Effacement total de la dette au 28 novembre.</note>
+            </slide>
+            <slide id="slide-4" title="Décembre 2026 : Le Sas de Transition">
+                <flux>+4 500 NIS (Base +211 NIS)</flux>
+                <charges>Survie allégée + 600 NIS herbes + 212 NIS abonnements (12 déc)</charges>
+                <balance>-1 NIS (Provisoire)</balance>
+                <note>Maintien de l'équilibre avant la bascule du modèle complet.</note>
+            </slide>
+            <slide id="slide-5" title="Janvier & Février 2027 : Modèle Stabilisé">
+                <flux>+4 500 NIS par mois</flux>
+                <charges>Modèle complet (+500 survie/parents) + 600 NIS herbes + Épargne</charges>
+                <balance>Jan: +100 NIS | Fév: +200 NIS</balance>
+                <note>Activation des versements d'épargne et soutien aux parents sans rupture.</note>
+            </slide>
+            <slide id="slide-6" title="Mars & Avril 2027 : Extraction Trimestrielle">
+                <flux>+4 500 NIS + Extraction Coffre Leumi (~1 515 NIS)</flux>
+                <charges>Reconstruction progressive du coffre + 600 NIS herbes</charges>
+                <balance>Mars: +800 NIS 💰 | Avr: +900 NIS</balance>
+                <note>Optimisation de la trésorerie via les paliers trimestriels.</note>
+            </slide>
+            <slide id="slide-7" title="Mai à Juillet 2027 : Croisière Estivale">
+                <flux>+4 500 NIS par mois</flux>
+                <charges>Charges fixes, 600 NIS herbes et maîtrise des flux</charges>
+                <balance>Mai: +1000 | Juin: +1600 💰 | Juil: +1700 NIS</balance>
+                <note>Consolidation finale et atteinte d'un solde positif de 1 700 NIS en juillet.</note>
+            </slide>
+        </budget-deck>
+    </script>
 
-    <!-- ONGLET DE NAVIGATION -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('global')">Vue Globale</button>
-        <button class="tab-btn" onclick="switchTab('sept', -1565)">Sept 26</button>
-        <button class="tab-btn" onclick="switchTab('oct', -677)">Oct 26</button>
-        <button class="tab-btn" onclick="switchTab('nov', 211)">Nov 26</button>
-        <button class="tab-btn" onclick="switchTab('dec', -1)">Déc 26</button>
-        <button class="tab-btn" onclick="switchTab('jan', 100)">Jan 27</button>
-        <button class="tab-btn" onclick="switchTab('fev', 200)">Fév 27</button>
-        <button class="tab-btn" onclick="switchTab('mars', 800)">Mars 27 💰</button>
-        <button class="tab-btn" onclick="switchTab('avr', 900)">Avr 27</button>
-        <button class="tab-btn" onclick="switchTab('mai', 1000)">Mai 27</button>
-        <button class="tab-btn" onclick="switchTab('juin', 1600)">Juin 27 💰</button>
-        <button class="tab-btn" onclick="switchTab('juil', 1700)">Juil 27</button>
+    <!-- INTERFACE POWERPOINT -->
+    <div class="presentation-header">
+        <h1 id="deck-title">GuideoPlan - Plan Budgétaire</h1>
+        <span id="slide-counter">Slide 1 / 7</span>
     </div>
 
-    <!-- AQUARIUM COMMUN -->
-    <div id="aquarium" class="aquarium-container" style="display: none;">
-        <div id="water" class="water-level" style="height: 50%; background: var(--profit-color);">Solde</div>
-        <div class="bubble b-survie" data-label="Survie (-3000)"></div>
-        <div class="bubble b-abo" data-label="Abonnements (-212)"></div>
-        <div class="bubble b-boisson" data-label="Boissons (-300)"></div>
-        <div class="bubble b-epargne" data-label="Épargne / Perso (-1100)"></div>
-    </div>
+    <!-- ZONE DES SLIDES (Générées via JS depuis le XML) -->
+    <div id="slides-wrapper"></div>
 
-    <!-- VUE GLOBALE -->
-    <div id="global" class="tab-content active">
-        <h3>Trajectoire Complète (12 Sept 2026 - 28 Juil 2027)</h3>
-        <div class="chart-container">
-            <canvas id="mountainChart"></canvas>
-        </div>
+    <!-- NAVIGATION DU DIAPORAMA -->
+    <div class="deck-nav">
+        <button class="nav-btn" onclick="prevSlide()">◀ Précédent</button>
+        <div class="slide-indicators" id="indicators"></div>
+        <button class="nav-btn" onclick="nextSlide()">Suivant ▶</button>
     </div>
-
-    <!-- CONTENUS MENSUELS -->
-    <div id="sept" class="tab-content"><h3>Septembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Dette initiale:</strong> -3000 NIS</div><div class="data-card"><strong>Solde Fin:</strong> -1565 NIS</div></div></div>
-    <div id="oct" class="tab-content"><h3>Octobre 2026</h3><div class="data-grid"><div class="data-card"><strong>Départ:</strong> -1565 NIS</div><div class="data-card"><strong>Solde Fin:</strong> -677 NIS</div></div></div>
-    <div id="nov" class="tab-content"><h3>Novembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Dette anéantie !</strong></div><div class="data-card"><strong>Solde Fin:</strong> +211 NIS 🟢</div></div></div>
-    <div id="dec" class="tab-content"><h3>Décembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Abonnements (12 déc):</strong> -212 NIS</div><div class="data-card"><strong>Solde Provisoire:</strong> -1 NIS</div></div></div>
-    <div id="jan" class="tab-content"><h3>Janvier 2027</h3><div class="data-grid"><div class="data-card"><strong>Modèle 400ép/600perso:</strong> Actif</div><div class="data-card"><strong>Solde:</strong> +100 NIS</div></div></div>
-    <div id="fev" class="tab-content"><h3>Février 2027</h3><div class="data-grid"><div class="data-card"><strong>Accumulation:</strong> +500 épargne</div><div class="data-card"><strong>Solde:</strong> +200 NIS</div></div></div>
-    <div id="mars" class="tab-content"><h3>Mars 2027 (Extraction Trimestrielle)</h3><div class="data-grid"><div class="data-card"><strong>Coffre Leumi vidé:</strong> ~1515 NIS extraits</div><div class="data-card"><strong>Solde:</strong> +800 NIS 💰</div></div></div>
-    <div id="avr" class="tab-content"><h3>Avril 2027</h3><div class="data-grid"><div class="data-card"><strong>Reconstruction coffre:</strong> 500 NIS</div><div class="data-card"><strong>Solde:</strong> +900 NIS</div></div></div>
-    <div id="mai" class="tab-content"><h3>Mai 2027</h3><div class="data-grid"><div class="data-card"><strong>Reconstruction coffre:</strong> 1000 NIS</div><div class="data-card"><strong>Solde:</strong> +1000 NIS</div></div></div>
-    <div id="juin" class="tab-content"><h3>Juin 2027 (Extraction Trimestrielle)</h3><div class="data-grid"><div class="data-card"><strong>Coffre Leumi vidé:</strong> ~1515 NIS extraits</div><div class="data-card"><strong>Solde:</strong> +1600 NIS 💰</div></div></div>
-    <div id="juil" class="tab-content"><h3>Juillet 2027</h3><div class="data-grid"><div class="data-card"><strong>Stabilisation estivale:</strong></div><div class="data-card"><strong>Solde:</strong> +1700 NIS</div></div></div>
 
     <script>
-        function updateAquarium(balance) {
-            const water = document.getElementById('water');
-            let percentage = 50 + ((balance / 2000) * 40);
-            if (percentage < 10) percentage = 10;
-            if (percentage > 100) percentage = 100;
-            
-            water.style.height = percentage + '%';
-            if (balance < 0) {
-                water.style.backgroundColor = 'var(--debt-color)';
-                water.innerHTML = `Solde: ${balance} NIS`;
-            } else {
-                water.style.backgroundColor = 'var(--profit-color)';
-                water.innerHTML = `Trésorerie: +${balance} NIS`;
-            }
-        }
+        // Parser le XML embarqué
+        const xmlString = document.getElementById('budget-xml').textContent;
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        const slidesData = xmlDoc.getElementsByTagName('slide');
 
-        function switchTab(tabId, balance = null) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        const wrapper = document.getElementById('slides-wrapper');
+        const indicatorsContainer = document.getElementById('indicators');
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
 
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+        function buildSlides() {
+            for (let i = 0; i < totalSlides; i++) {
+                const slideNode = slidesData[i];
+                const title = slideNode.getAttribute('title');
+                const type = slideNode.getElementsByTagName('type')[0]?.textContent;
+                
+                const slideDiv = document.createElement('div');
+                slideDiv.className = `slide-container ${i === 0 ? 'active' : ''}`;
+                
+                let contentHTML = `<h2 class="slide-title">${title}</h2>`;
 
-            const aquarium = document.getElementById('aquarium');
-            if (tabId === 'global') {
-                aquarium.style.display = 'none';
-            } else {
-                aquarium.style.display = 'block';
-                updateAquarium(balance);
-            }
-        }
+                if (type === 'chart') {
+                    const summary = slideNode.getElementsByTagName('summary')[0].textContent;
+                    contentHTML += `
+                        <div class="highlight-box">${summary}</div>
+                        <div class="chart-box">
+                            <canvas id="mountainChart"></canvas>
+                        </div>
+                    `;
+                } else {
+                    const flux = slideNode.getElementsByTagName('flux')[0]?.textContent || '';
+                    const charges = slideNode.getElementsByTagName('charges')[0]?.textContent || '';
+                    const balance = slideNode.getElementsByTagName('balance')[0]?.textContent || '';
+                    const note = slideNode.getElementsByTagName('note')[0]?.textContent || '';
 
-        const ctx = document.getElementById('mountainChart').getContext('2d');
-        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.2)');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['12 Sept 26', '28 Sept', '28 Oct', '28 Nov', '12 Déc', '28 Jan 27', '28 Fév', '28 Mars', '28 Avr', '28 Mai', '28 Juin', '28 Juil'],
-                datasets: [{
-                    label: 'Solde Compte Courant (NIS)',
-                    data: [-2665, -1565, -677, 211, -1, 100, 200, 800, 900, 1000, 1600, 1700],
-                    borderColor: '#60a5fa',
-                    backgroundColor: gradient,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#fff',
-                    pointRadius: 6,
-                    fill: true,
-                    tension: 0.25
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                        ticks: { color: '#94a3b8' }
-                    },
-                    x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                        ticks: { color: '#94a3b8' }
-                    }
-                },
-                plugins: {
-                    legend: { labels: { color: '#f8fafc' } }
+                    contentHTML += `
+                        <table class="data-table">
+                            <tr><th>Flux & Entrées</th><td>${flux}</td></tr>
+                            <tr><th>Charges & Sorties</th><td>${charges}</td></tr>
+                            <tr><th>Solde du Compte</th><td><strong>${balance}</strong></td></tr>
+                        </table>
+                        <div class="highlight-box"><strong>Note analytique :</strong> ${note}</div>
+                    `;
                 }
+
+                slideDiv.innerHTML = contentHTML;
+                wrapper.appendChild(slideDiv);
+
+                // Indicateurs (points)
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                indicatorsContainer.appendChild(dot);
             }
-        });
+            updateCounter();
+        }
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.slide-container');
+            const dots = document.querySelectorAll('.dot');
+            
+            slides.forEach((s, idx) => {
+                s.classList.toggle('active', idx === currentSlide);
+            });
+            dots.forEach((d, idx) => {
+                d.classList.toggle('active', idx === currentSlide);
+            });
+            updateCounter();
+        }
+
+        function updateCounter() {
+            document.getElementById('slide-counter').textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlide();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Initialisation de la vue et du Graphique Chart.js
+        window.onload = function() {
+            buildSlides();
+
+            const ctx = document.getElementById('mountainChart').getContext('2d');
+            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(0, 43, 92, 0.7)');
+            gradient.addColorStop(1, 'rgba(24, 90, 157, 0.1)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['12 Sept 26', '28 Sept', '28 Oct', '28 Nov', '12 Déc', '28 Jan 27', '28 Fév', '28 Mars', '28 Avr', '28 Mai', '28 Juin', '28 Juil'],
+                    datasets: [{
+                        label: 'Solde Compte Courant (NIS)',
+                        data: [-2665, -1565, -677, 211, -1, 100, 200, 800, 900, 1000, 1600, 1700],
+                        borderColor: '#002b5c',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffb703',
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { color: '#334155' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { color: '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#002b5c', font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        };
     </script>
 </body>
 </html>
+
 
