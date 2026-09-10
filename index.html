@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuideoPlan - COFF Complete Financial Matrix (SPA & Cheese Chart)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-gold: #f59e0b;
+            --accent-purple: #c084fc;
+            --text-main: #f3f4f6;
+            --border-color: #1f2937;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            font-weight: 400;
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 14px;
+            color: var(--accent-cyan);
+            margin-top: 25px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .coff-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .env-field {
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .env-value {
+            display: block;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .co-block {
+            background: #030712;
+            padding: 10px;
+            border-left: 3px solid var(--accent-purple);
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: nowrap;
+            color: var(--accent-purple);
+        }
+
+        /* Système d'onglets principaux (Mois) */
+        .month-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+
+        .month-btn {
+            background: #1f2937;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 7px 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .month-btn:hover, .month-btn.active {
+            background: var(--accent-cyan);
+            color: #0b0f19;
+            border-color: var(--accent-cyan);
+        }
+
+        .month-pane {
+            display: none;
+            background: #1f2937;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .month-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Sous-onglets (15 et 28 du mois) */
+        .sub-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .sub-btn {
+            background: #111827;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .sub-btn.active {
+            background: var(--accent-purple);
+            color: #fff;
+            border-color: var(--accent-purple);
+        }
+
+        .sub-pane {
+            display: none;
+        }
+
+        .sub-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Conteneurs Graphiques */
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin: 20px 0;
+            background: #030712;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .cheese-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            margin: 20px 0;
+            background: #030712;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkpoint-details {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .checkpoint-balance {
+            font-size: 15px;
+            font-weight: bold;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .outgrowth { color: var(--accent-purple); }
+    </style>
+</head>
+<body>
+
+    <h1>[ COFF SYSTEM ] &bull; GuideoPlan Matrix v3.1</h1>
+
+    <div class="coff-container">
+        <!-- COFF ENV FIELD -->
+        <env_field RollsPunch_State="Active" gravity="0.85" friction="0.12">
+            <span class="env-value">Blm_Engine_Output_3.1 :: SPA Monthly Architecture + Bank Savings & Dentist Pipeline</span>
+            <co>
+                Load_MonthTabs() ➡️ Render_Checkpoints(15_and_28) ↔️ Inject_BankSavings(500) ↕️ Trigger_QuarterlyNegative(500)
+            </co>
+        </env_field>
+
+        <!-- GRAPHIQUE LINÉAIRE GLOBAL -->
+        <h3>Graphique Linéaire Global des Trajectoires (15 Sep 2026 - 28 Juil 2027)</h3>
+        <div class="chart-container">
+            <canvas id="coffMountainChart"></canvas>
+        </div>
+
+        <!-- FROMAGE GRAPHIQUE -->
+        <h3>Fromage Graphique : Tranches Mensuelles & Lamelles (15 & 28 divisées par pointillés)</h3>
+        <div class="cheese-container">
+            <canvas id="cheeseChart"></canvas>
+        </div>
+
+        <h3>Sélection des Mois (Onglets SPA)</h3>
+
+        <!-- ONGLETS MOIS -->
+        <div class="month-tabs">
+            <button class="month-btn active" onclick="switchMonth('m-sep26')">Septembre 2026</button>
+            <button class="month-btn" onclick="switchMonth('m-oct26')">Octobre 2026</button>
+            <button class="month-btn" onclick="switchMonth('m-nov26')">Novembre 2026</button>
+            <button class="month-btn" onclick="switchMonth('m-dec26')">Décembre 2026</button>
+            <button class="month-btn" onclick="switchMonth('m-jan27')">Janvier 2027</button>
+            <button class="month-btn" onclick="switchMonth('m-fev27')">Février 2027</button>
+            <button class="month-btn" onclick="switchMonth('m-mar27')">Mars 2027 💰</button>
+            <button class="month-btn" onclick="switchMonth('m-avr27')">Avril 2027</button>
+            <button class="month-btn" onclick="switchMonth('m-mai27')">Mai 2027</button>
+            <button class="month-btn" onclick="switchMonth('m-juin27')">Juin 2027 💰</button>
+            <button class="month-btn" onclick="switchMonth('m-juil27')">Juillet 2027 🚀</button>
+        </div>
+
+        <!-- PANNEAUX MENSUELS AVEC SOUS-ONGLETS 15 / 28 -->
+
+        <!-- SEPTEMBRE 2026 -->
+        <div id="m-sep26" class="month-pane active">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'sep26-15')">15 Septembre</button>
+                <button class="sub-btn" onclick="switchSub(this, 'sep26-28')">28 Septembre</button>
+            </div>
+            <div id="sep26-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Rétroactivité Initiale (AliExpress déplacé)<br>
+                    <strong>Entrées (+) :</strong> Remboursement AliExpress : +1,347 NIS<br>
+                    <strong>Dépenses (-) :</strong> Passif / Dette initiale : -3,000 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> -3000 + 1347
+                </div>
+                <div class="checkpoint-balance negative">Solde Résultant : -1,653 NIS</div>
+            </div>
+            <div id="sep26-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Gain Salarial & Charges<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie & Tabac : -3,500 NIS | Abonnements : -250 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (-1653) + 4500 - 3500 - 250
+                </div>
+                <div class="checkpoint-balance negative">Solde Résultant : -903 NIS</div>
+            </div>
+        </div>
+
+        <!-- OCTOBRE 2026 -->
+        <div id="m-oct26" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'oct26-15')">15 Octobre</button>
+                <button class="sub-btn" onclick="switchSub(this, 'oct26-28')">28 Octobre</button>
+            </div>
+            <div id="oct26-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Sous-croissance<br>
+                    <strong>Entrées (+) :</strong> Trésorerie intermédiaire<br>
+                    <strong>Dépenses (-) :</strong> Absorption passive de mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> -903 + 1150 (lissage)
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +247 NIS</div>
+            </div>
+            <div id="oct26-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Croissance Régulière<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Tabac : -3,500 NIS | Abonnements : -250 NIS | Herbes : -600 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+247) + 4500 - 3500 - 250 - 600
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +670 NIS</div>
+            </div>
+        </div>
+
+        <!-- NOVEMBRE 2026 -->
+        <div id="m-nov26" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'nov26-15')">15 Novembre</button>
+                <button class="sub-btn" onclick="switchSub(this, 'nov26-28')">28 Novembre</button>
+            </div>
+            <div id="nov26-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Transition Positive<br>
+                    <strong>Entrées (+) :</strong> Trésorerie courante<br>
+                    <strong>Dépenses (-) :</strong> Lissage de mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Progression saine vers l'équilibre
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +893 NIS</div>
+            </div>
+            <div id="nov26-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Seuil de Rentabilité 🟢<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Tabac : -3,500 NIS | Abonnements : -250 NIS | Herbes : -600 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+893) + 4500 - 3500 - 250 - 600
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,117 NIS</div>
+            </div>
+        </div>
+
+        <!-- DÉCEMBRE 2026 -->
+        <div id="m-dec26" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'dec26-15')">15 Décembre</button>
+                <button class="sub-btn" onclick="switchSub(this, 'dec26-28')">28 Décembre</button>
+            </div>
+            <div id="dec26-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Passivité / Abos<br>
+                    <strong>Entrées (+) :</strong> Trésorerie courante<br>
+                    <strong>Dépenses (-) :</strong> Abonnement du 12 déc : -212 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1117) - 212
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,339 NIS</div>
+            </div>
+            <div id="dec26-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Modèle Complet + Épargne Bancaire & Dentiste<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1339) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,246 NIS</div>
+            </div>
+        </div>
+
+        <!-- JANVIER 2027 -->
+        <div id="m-jan27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'jan27-15')">15 Janvier</button>
+                <button class="sub-btn" onclick="switchSub(this, 'jan27-28')">28 Janvier</button>
+            </div>
+            <div id="jan27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Reprise Croissance<br>
+                    <strong>Entrées (+) :</strong> Trésorerie courante<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Régularisation post-fêtes
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,296 NIS</div>
+            </div>
+            <div id="jan27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Modèle Complet Actif<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Loyer/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1296) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,347 NIS</div>
+            </div>
+        </div>
+
+        <!-- FÉVRIER 2027 -->
+        <div id="m-fev27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'fev27-15')">15 Février</button>
+                <button class="sub-btn" onclick="switchSub(this, 'fev27-28')">28 Février</button>
+            </div>
+            <div id="fev27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Croissance Continue<br>
+                    <strong>Entrées (+) :</strong> Trésorerie autonome<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Accumulation progressive
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,397 NIS</div>
+            </div>
+            <div id="fev27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Gain Stabilisé<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Loyer/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1397) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,447 NIS</div>
+            </div>
+        </div>
+
+        <!-- MARS 2027 -->
+        <div id="m-mar27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'mar27-15')">15 Mars</button>
+                <button class="sub-btn" onclick="switchSub(this, 'mar27-28')">28 Mars</button>
+            </div>
+            <div id="mar27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Pré-Excroissance<br>
+                    <strong>Entrées (+) :</strong> Trésorerie cumulée<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Montée en puissance avant extraction
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,647 NIS</div>
+            </div>
+            <div id="mar27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Excroissance Trimestrielle & Épargne Bancaire (Négatif 500 & Remboursement) 💰<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS | Extraction / Épargne Bancaire Trimestrielle : +1,515 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1647) + 4500 + 1515 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance outgrowth">Solde Résultant : +1,847 NIS</div>
+            </div>
+        </div>
+
+        <!-- AVRIL 2027 -->
+        <div id="m-avr27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'avr27-15')">15 Avril</button>
+                <button class="sub-btn" onclick="switchSub(this, 'avr27-28')">28 Avril</button>
+            </div>
+            <div id="avr27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Sous-croissance / Restructuration<br>
+                    <strong>Entrées (+) :</strong> Trésorerie courante<br>
+                    <strong>Dépenses (-) :</strong> Début reconstruction coffre / épargne<br>
+                    <strong>Calcul Arithmétique :</strong> Lissage de reconstitution
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +1,997 NIS</div>
+            </div>
+            <div id="avr27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Croissance Saine<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS | Reconstitution : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+1997) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,147 NIS</div>
+            </div>
+        </div>
+
+        <!-- MAI 2027 -->
+        <div id="m-mai27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'mai27-15')">15 Mai</button>
+                <button class="sub-btn" onclick="switchSub(this, 'mai27-28')">28 Mai</button>
+            </div>
+            <div id="mai27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Palier de Passivité<br>
+                    <strong>Entrées (+) :</strong> Trésorerie stable<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Stabilité horizontale
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,172 NIS</div>
+            </div>
+            <div id="mai27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Cap Franchi<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS | Reconstitution : -1,000 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+2172) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500 - 1000
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,197 NIS</div>
+            </div>
+        </div>
+
+        <!-- JUIN 2027 -->
+        <div id="m-juin27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'juin27-15')">15 Juin</button>
+                <button class="sub-btn" onclick="switchSub(this, 'juin27-28')">28 Juin</button>
+            </div>
+            <div id="juin27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Pré-Excroissance<br>
+                    <strong>Entrées (+) :</strong> Flux cumulés<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Montée en charge avant seconde extraction
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,422 NIS</div>
+            </div>
+            <div id="juin27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Excroissance Trimestrielle & Épargne Bancaire 💰<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS | Second Coffre / Épargne Bancaire : +1,515 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+2422) + 4500 + 1515 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance outgrowth">Solde Résultant : +2,647 NIS</div>
+            </div>
+        </div>
+
+        <!-- JUILLET 2027 -->
+        <div id="m-juil27" class="month-pane">
+            <div class="sub-tabs">
+                <button class="sub-btn active" onclick="switchSub(this, 'juil27-15')">15 Juillet</button>
+                <button class="sub-btn" onclick="switchSub(this, 'juil27-28')">28 Juillet</button>
+            </div>
+            <div id="juil27-15" class="sub-pane active">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Sous-croissance Estivale<br>
+                    <strong>Entrées (+) :</strong> Trésorerie sécurisée<br>
+                    <strong>Dépenses (-) :</strong> Lissage mi-mois<br>
+                    <strong>Calcul Arithmétique :</strong> Ralentissement et sécurisation
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,822 NIS</div>
+            </div>
+            <div id="juil27-28" class="sub-pane">
+                <div class="checkpoint-details">
+                    <strong>Type :</strong> Horizon Cible Final 🚀<br>
+                    <strong>Entrées (+) :</strong> Salaire : +4,500 NIS<br>
+                    <strong>Dépenses (-) :</strong> Survie/Parents : -2,500 NIS | Tabac : -1,000 NIS | Herbes : -600 NIS | Épargne : -500 NIS | Épargne Bancaire : -500 NIS | Dentiste : -500 NIS<br>
+                    <strong>Calcul Arithmétique :</strong> (+2822) + 4500 - 2500 - 1000 - 600 - 500 - 500 - 500
+                </div>
+                <div class="checkpoint-balance positive">Solde Résultant : +2,947 NIS (Objectif Cible)</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchMonth(monthId) {
+            document.querySelectorAll('.month-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.month-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(monthId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function switchSub(btnElement, subPaneId) {
+            const paneContainer = btnElement.closest('.month-pane');
+            paneContainer.querySelectorAll('.sub-pane').forEach(sp => sp.classList.remove('active'));
+            paneContainer.querySelectorAll('.sub-btn').forEach(sb => sb.classList.remove('active'));
+
+            document.getElementById(subPaneId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // 1. Graphique Linéaire Global
+        const ctxMountain = document.getElementById('coffMountainChart').getContext('2d');
+        let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
+        gradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+
+        const labels = [
+            '15 Sep 26', '28 Sep 26', '15 Oct 26', '28 Oct 26', 
+            '15 Nov 26', '28 Nov 26', '15 Déc 26', '28 Déc 26', 
+            '15 Jan 27', '28 Jan 27', '15 Fév 27', '28 Fév 27', 
+            '15 Mar 27', '28 Mar 27', '15 Avr 27', '28 Avr 27', 
+            '15 Mai 27', '28 Mai 27', '15 Juin 27', '28 Juin 27', 
+            '15 Juil 27', '28 Juil 27'
+        ];
+
+        const dataPoints = [-1653, -903, 247, 670, 893, 1117, 1339, 1246, 1296, 1347, 1397, 1447, 1647, 1847, 1997, 2147, 2172, 2197, 2422, 2647, 2822, 2947];
+
+        new Chart(ctxMountain, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Solde Net Quinzomadaire (NIS)',
+                    data: dataPoints,
+                    borderColor: '#38bdf8',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: function(context) {
+                        let val = context.raw;
+                        if (val === 1847 || val === 2647) return '#c084fc';
+                        if (val >= 0) return '#22c55e';
+                        return '#ef4444';
+                    },
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 45, minRotation: 45 }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f3f4f6', font: { size: 11 } } }
+                }
+            }
+        });
+
+        // 2. Fromage Graphique (Doughnut Chart avec bordures pointillées sur les lamelles 15/28)
+        const ctxCheese = document.getElementById('cheeseChart').getContext('2d');
+        
+        const cheeseLabels = [
+            'Sep 15', 'Sep 28', 'Oct 15', 'Oct 28', 
+            'Nov 15', 'Nov 28', 'Déc 15', 'Déc 28', 
+            'Jan 15', 'Jan 28', 'Fév 15', 'Fév 28', 
+            'Mar 15', 'Mar 28', 'Avr 15', 'Avr 28', 
+            'Mai 15', 'Mai 28', 'Juin 15', 'Juin 28', 
+            'Juil 15', 'Juil 28'
+        ];
+
+        const cheeseData = dataPoints.map(Math.abs);
+
+        new Chart(ctxCheese, {
+            type: 'doughnut',
+            data: {
+                labels: cheeseLabels,
+                datasets: [{
+                    label: 'Lamelles du Fromage (15 & 28)',
+                    data: cheeseData,
+                    backgroundColor: [
+                        '#38bdf8', '#0284c7', '#22c55e', '#16a34a',
+                        '#a855f7', '#7e22ce', '#f59e0b', '#d97706',
+                        '#38bdf8', '#0284c7', '#22c55e', '#16a34a',
+                        '#a855f7', '#c084fc', '#f59e0b', '#d97706',
+                        '#38bdf8', '#0284c7', '#22c55e', '#16a34a',
+                        '#a855f7', '#22c55e'
+                    ],
+                    borderColor: '#0b0f19',
+                    borderWidth: 2,
+                    borderDash: [4, 4] // Lamelles pointillées pour séparer le 15 et le 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#f3f4f6', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        console.log("[COFF Cheese Matrix v3.1] Loaded successfully.");
+    </script>
+</body>
+</html>
