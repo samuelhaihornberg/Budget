@@ -1,386 +1,52 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuideoPlan - Présentation Stratégique Financière</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --ppt-blue-dark: #002b5c;
-            --ppt-blue-light: #185a9d;
-            --ppt-accent: #ffb703;
-            --ppt-bg: #e2e8f0;
-            --slide-bg: #ffffff;
-            --text-main: #212529;
-            --text-muted: #6c757d;
-        }
-
-        body {
-            background-color: var(--ppt-bg);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Arial, Tahoma, sans-serif;
-            margin: 0;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* En-tête de présentation style PowerPoint */
-        .presentation-header {
-            width: 100%;
-            max-width: 900px;
-            background: linear-gradient(135deg, var(--ppt-blue-dark), var(--ppt-blue-light));
-            color: white;
-            padding: 20px 30px;
-            border-radius: 6px 6px 0 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .presentation-header h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .presentation-header span {
-            font-size: 13px;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-
-        /* Conteneur de la "Slide" */
-        .slide-container {
-            width: 100%;
-            max-width: 900px;
-            background: var(--slide-bg);
-            min-height: 450px;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            box-sizing: border-box;
-            position: relative;
-            display: none;
-            border-left: 6px solid var(--ppt-accent);
-        }
-
-        .slide-container.active {
-            display: block;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-title {
-            font-size: 24px;
-            color: var(--ppt-blue-dark);
-            margin-top: 0;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        /* Barre de navigation style diaporama */
-        .deck-nav {
-            width: 100%;
-            max-width: 900px;
-            background: #cbd5e1;
-            padding: 12px 20px;
-            border-radius: 0 0 6px 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-        }
-
-        .nav-btn {
-            background: var(--ppt-blue-dark);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-
-        .nav-btn:hover {
-            background: var(--ppt-blue-light);
-        }
-
-        .slide-indicators {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            max-width: 600px;
-            padding: 4px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            background: #94a3b8;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .dot.active {
-            background: var(--ppt-accent);
-            transform: scale(1.2);
-        }
-
-        /* Tableaux et fiches style pro */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .data-table th, .data-table td {
-            border: 1px solid #cbd5e1;
-            padding: 12px;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .data-table th {
-            background-color: var(--ppt-blue-dark);
-            color: white;
-        }
-
-        .data-table tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-
-        .highlight-box {
-            background: #f1f5f9;
-            border-left: 4px solid var(--ppt-blue-light);
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 4px 4px 0;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .chart-box {
-            position: relative;
-            height: 320px;
-            width: 100%;
-            margin-top: 10px;
-        }
-    </style>
-</head>
+<html>
+<!-- COFF Architecture Layer v3.1 -->
+<style>
+    :root {
+        --coff-bg: #0f172a;
+        --coff-accent: #3b82f6;
+        --coff-border: #334155;
+    }
+    body { background: var(--coff-bg); color: #f8fafc; font-family: monospace; padding: 20px; }
+    .env-box { border: 1px solid var(--coff-accent); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+</style>
 <body>
 
-    <!-- DONNÉES XML EMBARQUÉES -->
-    <script type="text/xml" id="budget-xml">
-        <budget-deck currency="NIS">
-            <slide id="slide-1" title="Vue d'ensemble & Trajectoire">
-                <type>chart</type>
-                <summary>Analyse globale des flux financiers de Septembre 2026 à Juillet 2027. Sortie définitive du découvert en novembre et stabilisation de la trésorerie nette.</summary>
-            </slide>
-            <slide id="slide-2" title="Septembre 2026 : Le Point de Départ">
-                <flux>+4 500 NIS (Salaire) + 1 347 NIS (Remboursement AliExpress)</flux>
-                <charges>-3 500 NIS (Survie/Tabac) - 250 NIS (Abonnements)</charges>
-                <balance>-1 565 NIS</balance>
-                <note>Absorption initiale du creux grâce au remboursement exceptionnel.</note>
-            </slide>
-            <slide id="slide-3" title="Octobre & Novembre 2026 : Redressement">
-                <flux>+4 500 NIS par mois</flux>
-                <charges>Charges courantes + 600 NIS d'herbes intégrés</charges>
-                <balance>Oct: -677 NIS | Nov: +211 NIS 🟢</balance>
-                <note>Effacement total de la dette au 28 novembre.</note>
-            </slide>
-            <slide id="slide-4" title="Décembre 2026 : Le Sas de Transition">
-                <flux>+4 500 NIS (Base +211 NIS)</flux>
-                <charges>Survie allégée + 600 NIS herbes + 212 NIS abonnements (12 déc)</charges>
-                <balance>-1 NIS (Provisoire)</balance>
-                <note>Maintien de l'équilibre avant la bascule du modèle complet.</note>
-            </slide>
-            <slide id="slide-5" title="Janvier & Février 2027 : Modèle Stabilisé">
-                <flux>+4 500 NIS par mois</flux>
-                <charges>Modèle complet (+500 survie/parents) + 600 NIS herbes + Épargne</charges>
-                <balance>Jan: +100 NIS | Fév: +200 NIS</balance>
-                <note>Activation des versements d'épargne et soutien aux parents sans rupture.</note>
-            </slide>
-            <slide id="slide-6" title="Mars & Avril 2027 : Extraction Trimestrielle">
-                <flux>+4 500 NIS + Extraction Coffre Leumi (~1 515 NIS)</flux>
-                <charges>Reconstruction progressive du coffre + 600 NIS herbes</charges>
-                <balance>Mars: +800 NIS 💰 | Avr: +900 NIS</balance>
-                <note>Optimisation de la trésorerie via les paliers trimestriels.</note>
-            </slide>
-            <slide id="slide-7" title="Mai à Juillet 2027 : Croisière Estivale">
-                <flux>+4 500 NIS par mois</flux>
-                <charges>Charges fixes, 600 NIS herbes et maîtrise des flux</charges>
-                <balance>Mai: +1000 | Juin: +1600 💰 | Juil: +1700 NIS</balance>
-                <note>Consolidation finale et atteinte d'un solde positif de 1 700 NIS en juillet.</note>
-            </slide>
-        </budget-deck>
-    </script>
+<script>
+    // Initialisation du moteur COFF et des flux d'agents
+    const COFF_Config = {
+        env: "RollsPunch_Active",
+        gravity: 0.85,
+        friction: 0.12,
+        output: "Blm_Engine_Output_3.1"
+    };
 
-    <!-- INTERFACE POWERPOINT -->
-    <div class="presentation-header">
-        <h1 id="deck-title">GuideoPlan - Plan Budgétaire</h1>
-        <span id="slide-counter">Slide 1 / 7</span>
-    </div>
+    function runCoffPipeline() {
+        console.log("[COFF] Pipeline initiated...");
+    }
+</script>
 
-    <!-- ZONE DES SLIDES (Générées via JS depuis le XML) -->
-    <div id="slides-wrapper"></div>
+<!-- Champ d'environnement principal -->
+<env_field name="RollsPunch_State" status="Active" gravity="0.85" friction="0.12">
+    <value>Blm_Engine_Output_3.1</value>
+    <co>
+        Execute_CineticCheck(L_oeil) ➡️ Render_EmojiStick(Matrixia) ↔️ Inject_ThermalBoost(Voltix) ↕️ Trigger_KeffEMP(ViA)
+    </co>
+</env_field>
 
-    <!-- NAVIGATION DU DIAPORAMA -->
-    <div class="deck-nav">
-        <button class="nav-btn" onclick="prevSlide()">◀ Précédent</button>
-        <div class="slide-indicators" id="indicators"></div>
-        <button class="nav-btn" onclick="nextSlide()">Suivant ▶</button>
-    </div>
+<!-- Mesh de connexions logiques alphanumériques conditionnelles -->
+<div class="env-box">
+    <co id="mesh-alphanumeric">
+        <!-- Connexion séquentielle par adressage alphabétique -->
+        <node id="A1">Condition_Start</node> 
+        ↔️ 
+        <node id="A2">Data_Mapping</node> 
+        ↔️ 
+        <node id="B3">Execution_Trigger [egg: A1 -> B2 -> C3]</node>
+    </co>
+</div>
 
-    <script>
-        // Parser le XML embarqué
-        const xmlString = document.getElementById('budget-xml').textContent;
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-        const slidesData = xmlDoc.getElementsByTagName('slide');
-
-        const wrapper = document.getElementById('slides-wrapper');
-        const indicatorsContainer = document.getElementById('indicators');
-        let currentSlide = 0;
-        const totalSlides = slidesData.length;
-
-        function buildSlides() {
-            for (let i = 0; i < totalSlides; i++) {
-                const slideNode = slidesData[i];
-                const title = slideNode.getAttribute('title');
-                const type = slideNode.getElementsByTagName('type')[0]?.textContent;
-                
-                const slideDiv = document.createElement('div');
-                slideDiv.className = `slide-container ${i === 0 ? 'active' : ''}`;
-                
-                let contentHTML = `<h2 class="slide-title">${title}</h2>`;
-
-                if (type === 'chart') {
-                    const summary = slideNode.getElementsByTagName('summary')[0].textContent;
-                    contentHTML += `
-                        <div class="highlight-box">${summary}</div>
-                        <div class="chart-box">
-                            <canvas id="mountainChart"></canvas>
-                        </div>
-                    `;
-                } else {
-                    const flux = slideNode.getElementsByTagName('flux')[0]?.textContent || '';
-                    const charges = slideNode.getElementsByTagName('charges')[0]?.textContent || '';
-                    const balance = slideNode.getElementsByTagName('balance')[0]?.textContent || '';
-                    const note = slideNode.getElementsByTagName('note')[0]?.textContent || '';
-
-                    contentHTML += `
-                        <table class="data-table">
-                            <tr><th>Flux & Entrées</th><td>${flux}</td></tr>
-                            <tr><th>Charges & Sorties</th><td>${charges}</td></tr>
-                            <tr><th>Solde du Compte</th><td><strong>${balance}</strong></td></tr>
-                        </table>
-                        <div class="highlight-box"><strong>Note analytique :</strong> ${note}</div>
-                    `;
-                }
-
-                slideDiv.innerHTML = contentHTML;
-                wrapper.appendChild(slideDiv);
-
-                // Indicateurs (points)
-                const dot = document.createElement('div');
-                dot.className = `dot ${i === 0 ? 'active' : ''}`;
-                dot.onclick = () => goToSlide(i);
-                indicatorsContainer.appendChild(dot);
-            }
-            updateCounter();
-        }
-
-        function updateSlide() {
-            const slides = document.querySelectorAll('.slide-container');
-            const dots = document.querySelectorAll('.dot');
-            
-            slides.forEach((s, idx) => {
-                s.classList.toggle('active', idx === currentSlide);
-            });
-            dots.forEach((d, idx) => {
-                d.classList.toggle('active', idx === currentSlide);
-            });
-            updateCounter();
-        }
-
-        function updateCounter() {
-            document.getElementById('slide-counter').textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateSlide();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            updateSlide();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateSlide();
-        }
-
-        // Initialisation de la vue et du Graphique Chart.js
-        window.onload = function() {
-            buildSlides();
-
-            const ctx = document.getElementById('mountainChart').getContext('2d');
-            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(0, 43, 92, 0.7)');
-            gradient.addColorStop(1, 'rgba(24, 90, 157, 0.1)');
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['12 Sept 26', '28 Sept', '28 Oct', '28 Nov', '12 Déc', '28 Jan 27', '28 Fév', '28 Mars', '28 Avr', '28 Mai', '28 Juin', '28 Juil'],
-                    datasets: [{
-                        label: 'Solde Compte Courant (NIS)',
-                        data: [-2665, -1565, -677, 211, -1, 100, 200, 800, 900, 1000, 1600, 1700],
-                        borderColor: '#002b5c',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffb703',
-                        pointRadius: 5,
-                        fill: true,
-                        tension: 0.2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { color: '#334155' }
-                        },
-                        x: {
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { color: '#334155' }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#002b5c', font: { weight: 'bold' } } }
-                    }
-                }
-            });
-        };
-    </script>
 </body>
 </html>
+
 
 
