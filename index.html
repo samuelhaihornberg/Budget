@@ -3,206 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GuideoPlan - COFF Financial Architecture</title>
+    <title>GuideoPlan - Dashboard Financier Complet & Mathématiques</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --panel-bg: #111827;
-            --accent-cyan: #38bdf8;
-            --accent-green: #22c55e;
-            --accent-red: #ef4444;
-            --accent-gold: #f59e0b;
-            --text-main: #f3f4f6;
-            --border-color: #1f2937;
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --accent: #3b82f6;
+            --debt-color: rgba(239, 68, 68, 0.6);
+            --profit-color: rgba(34, 197, 94, 0.6);
+            
+            --c-survie: #ef4444;
+            --c-abo: #a855f7;
+            --c-boisson: #f59e0b;
+            --c-epargne: #10b981;
+            --c-perso: #ec4899;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 20px;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--accent-cyan);
-            letter-spacing: 2px;
-            font-weight: 400;
-            font-size: 18px;
-        }
+        h1 { text-align: center; font-weight: 300; letter-spacing: 2px; }
 
-        h3 {
-            font-size: 14px;
-            color: var(--text-main);
-            margin-top: 25px;
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-
-        .coff-container {
-            max-width: 900px;
-            margin: 0 auto;
+        .tab-btn {
             background: var(--panel-bg);
-            border: 1px solid var(--accent-cyan);
+            color: var(--text-main);
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            cursor: pointer;
             border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
-        }
-
-        .env-field {
-            display: block;
-            background: rgba(0,0,0,0.3);
-            border: 1px dashed var(--border-color);
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-        }
-
-        .env-value {
-            display: block;
-            color: var(--accent-gold);
+            transition: all 0.3s ease;
             font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 12px;
+        }
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
         }
 
-        .co-block {
-            display: block;
-            background: #030712;
-            padding: 10px;
-            border-left: 3px solid var(--accent-cyan);
-            font-size: 11px;
-            line-height: 1.5;
-            overflow-x: auto;
+        .tab-content {
+            display: none;
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .aquarium-container {
+            width: 100%;
+            height: 250px;
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        .water-level {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            transition: height 1.5s ease-out, background-color 1.5s ease-out;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: floatUp infinite ease-in;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2), 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .bubble::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
             white-space: nowrap;
+            color: #fff;
         }
 
-        .timeline-grid {
+        .b-survie { background: var(--c-survie); width: 50px; height: 50px; left: 15%; animation-duration: 4s; }
+        .b-abo { background: var(--c-abo); width: 25px; height: 25px; left: 40%; animation-duration: 3s; animation-delay: 1s; }
+        .b-boisson { background: var(--c-boisson); width: 30px; height: 30px; left: 65%; animation-duration: 5s; animation-delay: 0.5s; }
+        .b-epargne { background: var(--c-epargne); width: 35px; height: 35px; left: 85%; animation-duration: 4.5s; animation-delay: 1.5s; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
+            100% { transform: translateY(-300px) scale(1.2); opacity: 0; }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 45vh;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .data-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .data-card {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        /* Styles pour les tableaux de maths primaires */
+        .math-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            overflow: hidden;
         }
-
-        .node-card {
-            background: #1f2937;
-            border: 1px solid var(--border-color);
+        .math-table th, .math-table td {
+            border: 1px solid #334155;
             padding: 12px;
-            border-radius: 6px;
+            text-align: left;
         }
-
-        .node-date {
-            color: var(--accent-cyan);
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 6px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
+        .math-table th {
+            background: #2563eb;
+            color: #fff;
         }
-
-        .node-flow {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-            line-height: 1.4;
+        .math-operation {
+            font-family: monospace;
+            font-size: 15px;
+            color: #38bdf8;
         }
-
-        .node-balance {
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .positive { color: var(--accent-green); }
-        .negative { color: var(--accent-red); }
-        .neutral { color: var(--accent-gold); }
     </style>
 </head>
 <body>
 
-    <h1>[ COFF SYSTEM ] &bull; GuideoPlan</h1>
+    <h1>GuideoPlan - Matrice Financière & Analyse Mathématique</h1>
 
-    <div class="coff-container">
-        <!-- ENV FIELD CONFIGURATION -->
-        <div class="env-field" data-state="Active" data-gravity="0.85" data-friction="0.12">
-            <span class="env-value">Blm_Engine_Output_3.1 :: Financial Matrix Pipeline</span>
-            <div class="co-block">
-                Execute_InitialDebt(-2665) ➡️ Inject_AliExpressRefund(+1347) ↔️ Stabilize_Surviving(3500) ↕️ Trigger_LeumiExtraction(1515) ➡️ Reach_Target(+1700)
-            </div>
+    <!-- ONGLET DE NAVIGATION -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('global')">Vue Globale</button>
+        <button class="tab-btn" onclick="switchTab('comparatif', 0)">📊 Comparatif & Maths</button>
+        <button class="tab-btn" onclick="switchTab('sept', -1565)">Sept 26</button>
+        <button class="tab-btn" onclick="switchTab('oct', -677)">Oct 26</button>
+        <button class="tab-btn" onclick="switchTab('nov', 211)">Nov 26</button>
+        <button class="tab-btn" onclick="switchTab('dec', -1)">Déc 26</button>
+        <button class="tab-btn" onclick="switchTab('jan', 100)">Jan 27</button>
+        <button class="tab-btn" onclick="switchTab('fev', 200)">Fév 27</button>
+        <button class="tab-btn" onclick="switchTab('mars', 800)">Mars 27 💰</button>
+        <button class="tab-btn" onclick="switchTab('avr', 900)">Avr 27</button>
+        <button class="tab-btn" onclick="switchTab('mai', 1000)">Mai 27</button>
+        <button class="tab-btn" onclick="switchTab('juin', 1600)">Juin 27 💰</button>
+        <button class="tab-btn" onclick="switchTab('juil', 1700)">Juil 27</button>
+    </div>
+
+    <!-- AQUARIUM COMMUN -->
+    <div id="aquarium" class="aquarium-container" style="display: none;">
+        <div id="water" class="water-level" style="height: 50%; background: var(--profit-color);">Solde</div>
+        <div class="bubble b-survie" data-label="Survie (-3000)"></div>
+        <div class="bubble b-abo" data-label="Abonnements (-212)"></div>
+        <div class="bubble b-boisson" data-label="Boissons (-300)"></div>
+        <div class="bubble b-epargne" data-label="Épargne / Perso (-1100)"></div>
+    </div>
+
+    <!-- VUE GLOBALE -->
+    <div id="global" class="tab-content active">
+        <h3>Trajectoire Complète (12 Sept 2026 - 28 Juil 2027)</h3>
+        <div class="chart-container">
+            <canvas id="mountainChart"></canvas>
         </div>
+    </div>
 
-        <h3>Flux Temporel & Nœuds Alphanumériques</h3>
+    <!-- ONGLET COMPARATIF & MATHÉMATIQUES PRIMAIRES -->
+    <div id="comparatif" class="tab-content">
+        <h3>Explication Mathématique & Comparatif des Périodes</h3>
+        
+        <p>Ce tableau présente le raisonnement mathématique pas à pas (additions, soustractions et multiplicateurs) sous forme de calculs de type primaire, comparant la <strong>Phase 1 (Désendettement : Sept - Déc 2026)</strong> et la <strong>Phase 2 (Accumulation & Extraction : Jan - Juil 2027)</strong>.</p>
 
-        <!-- TIMELINE NODES -->
-        <div class="timeline-grid">
-            <div class="node-card">
-                <div class="node-date">A1 : 12 - 28 Sept 2026</div>
-                <div class="node-flow">Flux: +4500 (Salaire) + 1347 (Remb.)<br>Charges: -3500 (Survie) - 250 (Abos)</div>
-                <div class="node-balance negative">Solde: -1,565 NIS</div>
+        <h4>1. Tableaux de Calculs Fondamentaux (Opérations Élémentaires)</h4>
+        
+        <table class="math-table">
+            <thead>
+                <tr>
+                    <th>Phase</th>
+                    <th>Opération d'Addition / Soustraction (Mensuelle)</th>
+                    <th>Multiplication Trimestrielle (x 3)</th>
+                    <th>Résultat du Cycle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Phase 1 (Sept-Nov)</strong></td>
+                    <td class="math-operation">4500 (Entrée) - 3400 (Charges) = +1100</td>
+                    <td class="math-operation">N/A (Absorption dette)</td>
+                    <td>Dette de -3000 anéantie au 28 Nov (+211)</td>
+                </tr>
+                <tr>
+                    <td><strong>Phase 2 (Jan-Juil)</strong></td>
+                    <td class="math-operation">4500 (Entrée) - 3400 (Charges) - 1100 (Ép/Perso) = 0</td>
+                    <td class="math-operation">500 (Épargne) × 3 mois = 1500 + 15 (bonus)</td>
+                    <td>Extraction trimestrielle de <strong>1515 NIS</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4 style="margin-top: 25px;">2. Comparatif Détaillé des Deux Périodes</h4>
+        <div class="data-grid">
+            <div class="data-card">
+                <strong>Phase 1 : 12 Sept - 28 Déc 2026</strong>
+                <ul style="margin: 8px 0; padding-left: 15px; font-size: 13px;">
+                    <li>Objectif : Solder le découvert initial (-3000 NIS).</li>
+                    <li>Entrées variables : +1347 NIS (ordi) + salaires.</li>
+                    <li>Dynamique : Le solde remonte des profondeurs négatives pour devenir positif en novembre (+211 NIS).</li>
+                </ul>
             </div>
-
-            <div class="node-card">
-                <div class="node-date">B2 : 28 Octobre 2026</div>
-                <div class="node-flow">Flux: +4500 | Charges courantes + 600 Herbes</div>
-                <div class="node-balance negative">Solde: -677 NIS</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">C3 : 28 Novembre 2026</div>
-                <div class="node-flow">Flux: +4500 | Effacement total de la dette</div>
-                <div class="node-balance positive">Solde: +211 NIS 🟢</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">D4 : 12 - 28 Décembre 2026</div>
-                <div class="node-flow">Flux: +4500 (Base +211) | Abo -212 (12 déc) + 600 Herbes</div>
-                <div class="node-balance neutral">Solde: -1 NIS (Provisoire)</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">E5 : 28 Janvier 2027</div>
-                <div class="node-flow">Flux: +4500 | Modèle complet (+500 parents/survie, 600 Herbes, Épargne)</div>
-                <div class="node-balance positive">Solde: +100 NIS</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">F6 : 28 Février 2027</div>
-                <div class="node-flow">Flux: +4500 | Stabilisation et accumulation épargne</div>
-                <div class="node-balance positive">Solde: +200 NIS</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">G7 : 28 Mars 2027</div>
-                <div class="node-flow">Flux: +4500 + Coffre Leumi (~1515 extraits)</div>
-                <div class="node-balance positive">Solde: +800 NIS 💰</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">H8 : 28 Avril 2027</div>
-                <div class="node-flow">Flux: +4500 | Reconstruction progressive du coffre</div>
-                <div class="node-balance positive">Solde: +900 NIS</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">I9 : 28 Mai 2027</div>
-                <div class="node-flow">Flux: +4500 | Reconstruction coffre + 600 Herbes</div>
-                <div class="node-balance positive">Solde: +1,000 NIS</div>
-            </div>
-
-            <div class="node-card">
-                <div class="node-date">J10 : 28 Juin 2027</div>
-                <div class="node-flow">Flux: +4500 + Coffre Leumi (~1515 extraits)</div>
-                <div class="node-balance positive">Solde: +1,600 NIS 💰</div>
-            </div>
-
-            <div class="node-card" style="border-color: var(--accent-green);">
-                <div class="node-date">K11 : 28 Juillet 2027 &bull; Horizon Cible</div>
-                <div class="node-flow">Flux: +4500 | Stabilisation estivale et maîtrise définitive des flux</div>
-                <div class="node-balance positive" style="font-size: 16px;">Solde Cible Final : +1,700 NIS 🚀</div>
+            <div class="data-card">
+                <strong>Phase 2 : 12 Jan - 28 Juil 2027</strong>
+                <ul style="margin: 8px 0; padding-left: 15px; font-size: 13px;">
+                    <li>Objectif : Épargner et extraire du cash tous les 3 trimestres.</li>
+                    <li>Modèle fixe : 600 pers. + 500 épargne = 0 sur le compte courant.</li>
+                    <li>Dynamique : Le compte principal progresse vers +1700 NIS tout en libérant 1515 NIS cash tous les 3 mois.</li>
+                </ul>
             </div>
         </div>
     </div>
 
+    <!-- CONTENUS MENSUELS -->
+    <div id="sept" class="tab-content"><h3>Septembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Dette initiale:</strong> -3000 NIS</div><div class="data-card"><strong>Solde Fin:</strong> -1565 NIS</div></div></div>
+    <div id="oct" class="tab-content"><h3>Octobre 2026</h3><div class="data-grid"><div class="data-card"><strong>Départ:</strong> -1565 NIS</div><div class="data-card"><strong>Solde Fin:</strong> -677 NIS</div></div></div>
+    <div id="nov" class="tab-content"><h3>Novembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Dette anéantie !</strong></div><div class="data-card"><strong>Solde Fin:</strong> +211 NIS 🟢</div></div></div>
+    <div id="dec" class="tab-content"><h3>Décembre 2026</h3><div class="data-grid"><div class="data-card"><strong>Abonnements (12 déc):</strong> -212 NIS</div><div class="data-card"><strong>Solde Provisoire:</strong> -1 NIS</div></div></div>
+    <div id="jan" class="tab-content"><h3>Janvier 2027</h3><div class="data-grid"><div class="data-card"><strong>Modèle 500ép/600perso:</strong> Actif</div><div class="data-card"><strong>Solde:</strong> +100 NIS</div></div></div>
+    <div id="fev" class="tab-content"><h3>Février 2027</h3><div class="data-grid"><div class="data-card"><strong>Accumulation:</strong> +500 épargne</div><div class="data-card"><strong>Solde:</strong> +200 NIS</div></div></div>
+    <div id="mars" class="tab-content"><h3>Mars 2027 (Extraction Trimestrielle)</h3><div class="data-grid"><div class="data-card"><strong>Coffre Leumi vidé:</strong> ~1515 NIS extraits</div><div class="data-card"><strong>Solde:</strong> +800 NIS 💰</div></div></div>
+    <div id="avr" class="tab-content"><h3>Avril 2027</h3><div class="data-grid"><div class="data-card"><strong>Reconstruction coffre:</strong> 500 NIS</div><div class="data-card"><strong>Solde:</strong> +900 NIS</div></div></div>
+    <div id="mai" class="tab-content"><h3>Mai 2027</h3><div class="data-grid"><div class="data-card"><strong>Reconstruction coffre:</strong> 1000 NIS</div><div class="data-card"><strong>Solde:</strong> +1000 NIS</div></div></div>
+    <div id="juin" class="tab-content"><h3>Juin 2027 (Extraction Trimestrielle)</h3><div class="data-grid"><div class="data-card"><strong>Coffre Leumi vidé:</strong> ~1515 NIS extraits</div><div class="data-card"><strong>Solde:</strong> +1600 NIS 💰</div></div></div>
+    <div id="juil" class="tab-content"><h3>Juillet 2027</h3><div class="data-grid"><div class="data-card"><strong>Stabilisation estivale:</strong></div><div class="data-card"><strong>Solde:</strong> +1700 NIS</div></div></div>
+
     <script>
-        console.log("[COFF Engine v3.1] Stabilized and loaded successfully.");
+        function updateAquarium(balance) {
+            const water = document.getElementById('water');
+            let percentage = 50 + ((balance / 2000) * 40);
+            if (percentage < 10) percentage = 10;
+            if (percentage > 100) percentage = 100;
+            
+            water.style.height = percentage + '%';
+            if (balance < 0) {
+                water.style.backgroundColor = 'var(--debt-color)';
+                water.innerHTML = `Solde: ${balance} NIS`;
+            } else {
+                water.style.backgroundColor = 'var(--profit-color)';
+                water.innerHTML = `Trésorerie: +${balance} NIS`;
+            }
+        }
+
+        function switchTab(tabId, balance = null) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            const aquarium = document.getElementById('aquarium');
+            if (tabId === 'global' || tabId === 'comparatif') {
+                aquarium.style.display = 'none';
+            } else {
+                aquarium.style.display = 'block';
+                updateAquarium(balance);
+            }
+        }
+
+        const ctx = document.getElementById('mountainChart').getContext('2d');
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.2)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['12 Sept 26', '28 Sept', '28 Oct', '28 Nov', '12 Déc', '28 Jan 27', '28 Fév', '28 Mars', '28 Avr', '28 Mai', '28 Juin', '28 Juil'],
+                datasets: [{
+                    label: 'Solde Compte Courant (NIS)',
+                    data: [-2665, -1565, -677, 211, -1, 100, 200, 800, 900, 1000, 1600, 1700],
+                    borderColor: '#60a5fa',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointRadius: 6,
+                    fill: true,
+                    tension: 0.25
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f8fafc' } }
+                }
+            }
+        });
     </script>
 </body>
 </html>
+
