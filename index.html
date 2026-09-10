@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuideoPlan - COFF Advanced Financial Matrix (15 & 28)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-gold: #f59e0b;
+            --accent-purple: #c084fc;
+            --text-main: #f3f4f6;
+            --border-color: #1f2937;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            font-weight: 400;
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 14px;
+            color: var(--accent-cyan);
+            margin-top: 25px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .coff-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .env-field {
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .env-value {
+            display: block;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .co-block {
+            background: #030712;
+            padding: 10px;
+            border-left: 3px solid var(--accent-purple);
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: nowrap;
+            color: var(--accent-purple);
+        }
+
+        /* Graphique */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin: 20px 0;
+            background: #030712;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Grille des bilans 15 & 28 */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .node-card {
+            background: #1f2937;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .node-date {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .node-type {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .node-flow {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .node-balance {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--accent-gold); }
+        .outgrowth { color: var(--accent-purple); }
+    </style>
+</head>
+<body>
+
+    <h1>[ COFF SYSTEM ] &bull; GuideoPlan Matrix (15 & 28)</h1>
+
+    <div class="coff-container">
+        <!-- ENV FIELD CONFIGURATION & LOGIC MAPPING -->
+        <div class="env-field" data-state="Active" data-dynamics="Multi-Phase">
+            <span class="env-value">Blm_Engine_Output_3.1 :: Rétroactivites ➡️ Passivités ➡️ Excroissances</span>
+            <div class="co-block">
+                Inject_Retroactive(+1347) ↔️ Absorb_Passivity(-3000 ➡️ -677) ↕️ Trigger_QuarterlyOutgrowth(Leumi_1515) ➡️ Stabilize_Gain(+1700)
+            </div>
+        </div>
+
+        <!-- SECTION GRAPHIQUE DES COURBES -->
+        <h3>Analyse Graphique : Courbes, Croissances & Excroissances (15 & 28)</h3>
+        <div class="chart-container">
+            <canvas id="coffMountainChart"></canvas>
+        </div>
+
+        <h3>Registre Temporel Détaillé (Quinzaines : 15 & 28 du mois)</h3>
+
+        <!-- TIMELINE NODES 15 & 28 -->
+        <div class="timeline-grid">
+            <!-- Septembre -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Septembre 2026</span><span class="node-type">Passivité Initiale</span></div>
+                <div class="node-flow">Point de départ de la dette brute avant injection de trésorerie.</div>
+                <div class="node-balance negative">Solde : -3,000 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Septembre 2026</span><span class="node-type">Rétroactivité & Gain</span></div>
+                <div class="node-flow">Flux : +4500 (Salaire) + 1347 (Remb. AliExpress) | Charges : -3500 - 250</div>
+                <div class="node-balance negative">Solde : -1,565 NIS</div>
+            </div>
+
+            <!-- Octobre -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Octobre 2026</span><span class="node-type">Sous-croissance</span></div>
+                <div class="node-flow">Phase d'absorption passive intermédiaire de mi-mois.</div>
+                <div class="node-balance negative">Solde : -1,100 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Octobre 2026</span><span class="node-type">Croissance Régulière</span></div>
+                <div class="node-flow">Flux : +4500 | Charges courantes + 600 Herbes intégrées.</div>
+                <div class="node-balance negative">Solde : -677 NIS</div>
+            </div>
+
+            <!-- Novembre -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Novembre 2026</span><span class="node-type">Transition Positive</span></div>
+                <div class="node-flow">L'effet cumulé des flux ramène le compte proche de l'équilibre.</div>
+                <div class="node-balance negative">Solde : -230 NIS</div>
+            </div>
+            <div class="node-card" style="border-color: var(--accent-green);">
+                <div class="node-date"><span>28 Novembre 2026</span><span class="node-type">Seuil de Rentabilité 🟢</span></div>
+                <div class="node-flow">Flux : +4500 | Effacement total et définitif de la dette initiale.</div>
+                <div class="node-balance positive">Solde : +211 NIS</div>
+            </div>
+
+            <!-- Décembre -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Décembre 2026</span><span class="node-type">Passivité / Abos</span></div>
+                <div class="node-flow">Prélèvement abonnement (-212) absorbé par la trésorerie.</div>
+                <div class="node-balance positive">Solde : +105 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Décembre 2026</span><span class="node-type">Ajustement Modèle</span></div>
+                <div class="node-flow">Flux : +4500 | Transition vers le nouveau modèle de charges.</div>
+                <div class="node-balance neutral">Solde : -1 NIS (Provisoire)</div>
+            </div>
+
+            <!-- Janvier -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Janvier 2027</span><span class="node-type">Reprise Croissance</span></div>
+                <div class="node-flow">Stabilisation post-fêtes et réajustement des flux.</div>
+                <div class="node-balance positive">Solde : +50 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Janvier 2027</span><span class="node-type">Modèle Complet Actif</span></div>
+                <div class="node-flow">Flux : +4500 | Activation épargne et soutien parents (500).</div>
+                <div class="node-balance positive">Solde : +100 NIS</div>
+            </div>
+
+            <!-- Février -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Février 2027</span><span class="node-type">Croissance Continue</span></div>
+                <div class="node-flow">accumulation régulière de l'épargne et maîtrise des coûts.</div>
+                <div class="node-balance positive">Solde : +150 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Février 2027</span><span class="node-type">Gain Stabilisé</span></div>
+                <div class="node-flow">Flux : +4500 | Consolidation du solde net positif.</div>
+                <div class="node-balance positive">Solde : +200 NIS</div>
+            </div>
+
+            <!-- Mars -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Mars 2027</span><span class="node-type">Pré-Excroissance</span></div>
+                <div class="node-flow">Phase d'attente avant extraction du coffre trimestriel.</div>
+                <div class="node-balance positive">Solde : +500 NIS</div>
+            </div>
+            <div class="node-card" style="border-color: var(--accent-purple);">
+                <div class="node-date"><span>28 Mars 2027</span><span class="node-type">Excroissance Trimestrielle 💰</span></div>
+                <div class="node-flow">Flux : +4500 + Coffre Leumi extrait (~1515 NIS). Pic de gain.</div>
+                <div class="node-balance outgrowth">Solde : +800 NIS</div>
+            </div>
+
+            <!-- Avril -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Avril 2027</span><span class="node-type">Sous-croissance / Restructuration</span></div>
+                <div class="node-flow">Reconstruction progressive du coffre Leumi entamée.</div>
+                <div class="node-balance positive">Solde : +850 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Avril 2027</span><span class="node-type">Croissance Saine</span></div>
+                <div class="node-flow">Flux : +4500 | Absorption de la reconstruction du coffre.</div>
+                <div class="node-balance positive">Solde : +900 NIS</div>
+            </div>
+
+            <!-- Mai -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Mai 2027</span><span class="node-type">Palier de Passivité</span></div>
+                <div class="node-flow">Stabilité horizontale des charges et des entrées.</div>
+                <div class="node-balance positive">Solde : +950 NIS</div>
+            </div>
+            <div class="node-card">
+                <div class="node-date"><span>28 Mai 2027</span><span class="node-type">Cap Franchi</span></div>
+                <div class="node-flow">Flux : +4500 | Atteinte du palier des 1000 NIS net.</div>
+                <div class="node-balance positive">Solde : +1,000 NIS</div>
+            </div>
+
+            <!-- Juin -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Juin 2027</span><span class="node-type">Pré-Excroissance</span></div>
+                <div class="node-flow">Montée en charge de la trésorerie avant la deuxième extraction.</div>
+                <div class="node-balance positive">Solde : +1,300 NIS</div>
+            </div>
+            <div class="node-card" style="border-color: var(--accent-purple);">
+                <div class="node-date"><span>28 Juin 2027</span><span class="node-type">Excroissance Trimestrielle 💰</span></div>
+                <div class="node-flow">Flux : +4500 + Second coffre Leumi extrait (~1515 NIS).</div>
+                <div class="node-balance outgrowth">Solde : +1,600 NIS</div>
+            </div>
+
+            <!-- Juillet -->
+            <div class="node-card">
+                <div class="node-date"><span>15 Juillet 2027</span><span class="node-type">Sous-croissance Estivale</span></div>
+                <div class="node-flow">Phase de ralentissement et de sécurisation des acquis.</div>
+                <div class="node-balance positive">Solde : +1,650 NIS</div>
+            </div>
+            <div class="node-card" style="border-color: var(--accent-green);">
+                <div class="node-date"><span>28 Juillet 2027</span><span class="node-type">Horizon Cible Final 🚀</span></div>
+                <div class="node-flow">Flux : +4500 | Stabilisation estivale et maîtrise définitive des flux.</div>
+                <div class="node-balance positive" style="font-size: 16px;">Solde Cible : +1,700 NIS</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration du graphique Chart.js avec les points au 15 et 28 de chaque mois
+        const ctx = document.getElementById('coffMountainChart').getContext('2d');
+        
+        let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(192, 132, 252, 0.4)');
+        gradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+
+        const labels = [
+            '15 Sep 26', '28 Sep 26', 
+            '15 Oct 26', '28 Oct 26', 
+            '15 Nov 26', '28 Nov 26', 
+            '15 Déc 26', '28 Déc 26', 
+            '15 Jan 27', '28 Jan 27', 
+            '15 Fév 27', '28 Fév 27', 
+            '15 Mar 27', '28 Mar 27', 
+            '15 Avr 27', '28 Avr 27', 
+            '15 Mai 27', '28 Mai 27', 
+            '15 Juin 27', '28 Juin 27', 
+            '15 Juil 27', '28 Juil 27'
+        ];
+
+        const dataPoints = [
+            -3000, -1565, 
+            -1100, -677, 
+            -230, 211, 
+            105, -1, 
+            50, 100, 
+            150, 200, 
+            500, 800, 
+            850, 900, 
+            950, 1000, 
+            1300, 1600, 
+            1650, 1700
+        ];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Solde Net Quinzomadaire (NIS)',
+                    data: dataPoints,
+                    borderColor: '#38bdf8',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: function(context) {
+                        let val = context.raw;
+                        if (val === 800 || val === 1600) return '#c084fc'; // Excroissances trimestrielles
+                        if (val >= 0) return '#22c55e'; // Positif
+                        return '#ef4444'; // Négatif
+                    },
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 45, minRotation: 45 }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f3f4f6', font: { size: 11 } } }
+                }
+            }
+        });
+
+        console.log("[COFF Matrix Engine] Dual-checkpoint tracker (15 & 28) loaded successfully.");
+    </script>
+</body>
+</html>
