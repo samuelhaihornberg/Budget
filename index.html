@@ -21,7 +21,7 @@
             color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
 
         h1 {
@@ -29,6 +29,13 @@
             color: var(--accent-cyan);
             letter-spacing: 2px;
             font-weight: 400;
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 14px;
+            color: var(--text-main);
+            margin-top: 25px;
         }
 
         .coff-container {
@@ -37,74 +44,70 @@
             background: var(--panel-bg);
             border: 1px solid var(--accent-cyan);
             border-radius: 8px;
-            padding: 25px;
+            padding: 15px;
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
         }
 
-        env_field {
+        .env-field {
             display: block;
             background: rgba(0,0,0,0.3);
             border: 1px dashed var(--border-color);
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
             border-radius: 6px;
         }
 
-        value {
+        .env-value {
             display: block;
             color: var(--accent-gold);
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
 
-        co {
+        .co-block {
             display: block;
             background: #030712;
-            padding: 12px;
+            padding: 10px;
             border-left: 3px solid var(--accent-cyan);
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 11px;
+            line-height: 1.5;
             overflow-x: auto;
             white-space: nowrap;
         }
 
         .timeline-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .node-card {
             background: #1f2937;
             border: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 12px;
             border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .node-card:hover {
-            border-color: var(--accent-cyan);
-            transform: translateY(-2px);
         }
 
         .node-date {
             color: var(--accent-cyan);
             font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 13px;
+            margin-bottom: 6px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 4px;
         }
 
         .node-flow {
-            font-size: 12px;
+            font-size: 11px;
             color: #9ca3af;
             margin-bottom: 6px;
+            line-height: 1.4;
         }
 
         .node-balance {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -115,18 +118,18 @@
 </head>
 <body>
 
-    <h1>[ COFF SYSTEM ] &bull; GuideoPlan Budget Engine</h1>
+    <h1>[ COFF SYSTEM ] &bull; GuideoPlan</h1>
 
     <div class="coff-container">
         <!-- ENV FIELD CONFIGURATION -->
-        <env_field RollsPunch_State="Active" gravity="0.85" friction="0.12" timeline="2026-09-12_to_2027-07-28">
-            <value>Blm_Engine_Output_3.1 :: Financial Matrix Pipeline</value>
-            <co>
+        <div class="env-field" data-state="Active" data-gravity="0.85" data-friction="0.12">
+            <span class="env-value">Blm_Engine_Output_3.1 :: Financial Matrix Pipeline</span>
+            <div class="co-block">
                 Execute_InitialDebt(-2665) ➡️ Inject_AliExpressRefund(+1347) ↔️ Stabilize_Surviving(3500) ↕️ Trigger_LeumiExtraction(1515) ➡️ Reach_Target(+1700)
-            </co>
-        </env_field>
+            </div>
+        </div>
 
-        <h3>Flux Temporel & Nœuds Alphanumériques (A1 ➡️ J12)</h3>
+        <h3>Flux Temporel & Nœuds Alphanumériques</h3>
 
         <!-- TIMELINE NODES -->
         <div class="timeline-grid">
@@ -190,18 +193,16 @@
                 <div class="node-balance positive">Solde: +1,600 NIS 💰</div>
             </div>
 
-            <div class="node-card" style="grid-column: 1 / -1; border-color: var(--accent-green);">
+            <div class="node-card" style="border-color: var(--accent-green);">
                 <div class="node-date">K11 : 28 Juillet 2027 &bull; Horizon Cible</div>
                 <div class="node-flow">Flux: +4500 | Stabilisation estivale et maîtrise définitive des flux</div>
-                <div class="node-balance positive" style="font-size: 18px;">Solde Cible Final : +1,700 NIS 🚀</div>
+                <div class="node-balance positive" style="font-size: 16px;">Solde Cible Final : +1,700 NIS 🚀</div>
             </div>
         </div>
     </div>
 
     <script>
-        // Script de chargement COFF
-        console.log("[COFF Engine v3.1] Initialized successfully.");
-        console.log("[Env] RollsPunch_State: Active | Target Balance: +1700 NIS");
+        console.log("[COFF Engine v3.1] Stabilized and loaded successfully.");
     </script>
 </body>
 </html>
