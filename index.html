@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuideoPlan - COFF Financial Architecture</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-gold: #f59e0b;
+            --text-main: #f3f4f6;
+            --border-color: #1f2937;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .coff-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        env_field {
+            display: block;
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed var(--border-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        value {
+            display: block;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        co {
+            display: block;
+            background: #030712;
+            padding: 12px;
+            border-left: 3px solid var(--accent-cyan);
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .node-card {
+            background: #1f2937;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .node-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .node-date {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .node-flow {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .node-balance {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <h1>[ COFF SYSTEM ] &bull; GuideoPlan Budget Engine</h1>
+
+    <div class="coff-container">
+        <!-- ENV FIELD CONFIGURATION -->
+        <env_field RollsPunch_State="Active" gravity="0.85" friction="0.12" timeline="2026-09-12_to_2027-07-28">
+            <value>Blm_Engine_Output_3.1 :: Financial Matrix Pipeline</value>
+            <co>
+                Execute_InitialDebt(-2665) ➡️ Inject_AliExpressRefund(+1347) ↔️ Stabilize_Surviving(3500) ↕️ Trigger_LeumiExtraction(1515) ➡️ Reach_Target(+1700)
+            </co>
+        </env_field>
+
+        <h3>Flux Temporel & Nœuds Alphanumériques (A1 ➡️ J12)</h3>
+
+        <!-- TIMELINE NODES -->
+        <div class="timeline-grid">
+            <div class="node-card">
+                <div class="node-date">A1 : 12 - 28 Sept 2026</div>
+                <div class="node-flow">Flux: +4500 (Salaire) + 1347 (Remb.)<br>Charges: -3500 (Survie) - 250 (Abos)</div>
+                <div class="node-balance negative">Solde: -1,565 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">B2 : 28 Octobre 2026</div>
+                <div class="node-flow">Flux: +4500 | Charges courantes + 600 Herbes</div>
+                <div class="node-balance negative">Solde: -677 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">C3 : 28 Novembre 2026</div>
+                <div class="node-flow">Flux: +4500 | Effacement total de la dette</div>
+                <div class="node-balance positive">Solde: +211 NIS 🟢</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">D4 : 12 - 28 Décembre 2026</div>
+                <div class="node-flow">Flux: +4500 (Base +211) | Abo -212 (12 déc) + 600 Herbes</div>
+                <div class="node-balance neutral">Solde: -1 NIS (Provisoire)</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">E5 : 28 Janvier 2027</div>
+                <div class="node-flow">Flux: +4500 | Modèle complet (+500 parents/survie, 600 Herbes, Épargne)</div>
+                <div class="node-balance positive">Solde: +100 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">F6 : 28 Février 2027</div>
+                <div class="node-flow">Flux: +4500 | Stabilisation et accumulation épargne</div>
+                <div class="node-balance positive">Solde: +200 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">G7 : 28 Mars 2027</div>
+                <div class="node-flow">Flux: +4500 + Coffre Leumi (~1515 extraits)</div>
+                <div class="node-balance positive">Solde: +800 NIS 💰</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">H8 : 28 Avril 2027</div>
+                <div class="node-flow">Flux: +4500 | Reconstruction progressive du coffre</div>
+                <div class="node-balance positive">Solde: +900 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">I9 : 28 Mai 2027</div>
+                <div class="node-flow">Flux: +4500 | Reconstruction coffre + 600 Herbes</div>
+                <div class="node-balance positive">Solde: +1,000 NIS</div>
+            </div>
+
+            <div class="node-card">
+                <div class="node-date">J10 : 28 Juin 2027</div>
+                <div class="node-flow">Flux: +4500 + Coffre Leumi (~1515 extraits)</div>
+                <div class="node-balance positive">Solde: +1,600 NIS 💰</div>
+            </div>
+
+            <div class="node-card" style="grid-column: 1 / -1; border-color: var(--accent-green);">
+                <div class="node-date">K11 : 28 Juillet 2027 &bull; Horizon Cible</div>
+                <div class="node-flow">Flux: +4500 | Stabilisation estivale et maîtrise définitive des flux</div>
+                <div class="node-balance positive" style="font-size: 18px;">Solde Cible Final : +1,700 NIS 🚀</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script de chargement COFF
+        console.log("[COFF Engine v3.1] Initialized successfully.");
+        console.log("[Env] RollsPunch_State: Active | Target Balance: +1700 NIS");
+    </script>
+</body>
+</html>
