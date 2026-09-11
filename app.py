@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Récupération sécurisée de la clé depuis les variables d'environnement du serveur
-api_key = os.environ.get("GEMINI_API_KEY")
+api_key = os.environ.get("APIGEMINI")
 client = genai.Client(api_key=api_key)
 
 SYSTEM_INSTRUCTION = """
